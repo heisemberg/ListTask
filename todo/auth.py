@@ -22,10 +22,11 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        elif c.execute(
-            'SELECT id FROM user WHERE username = %s', (username,)
-        ) is not None:
-            error = 'User {} is already registered.'.format(username)
+        else:
+            c.execute('SELECT id FROM user WHERE username = %s', (username,))
+            user = c.fetchone()
+            if user is not None:
+                error = 'User {} is already registered.'.format(username)
 
         if error is None:
             c.execute(
@@ -46,9 +47,7 @@ def login():
         password = request.form['password']
         db, c = get_db()
         error = None
-        c.execute(
-            'SELECT * FROM user WHERE username = %s', (username,)
-        )
+        c.execute('SELECT * FROM user WHERE username = %s', (username,))
         user = c.fetchone()
 
         if user is None:
